@@ -14,11 +14,11 @@ final List<Product> mockProducts = [
     sizes: ['S', 'M', 'L', 'XL'],
     colors: [Colors.black, Colors.orange, Colors.white],
     description:
-        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        'A premium slim-fit polo shirt crafted from breathable cotton pique. Features the iconic embroidered logo on the chest, a ribbed collar, and two-button placket for a classic, sophisticated look.',
   ),
   const Product(
     id: '2',
-    name: 'Pink Casual Suit',
+    name: 'Light Blue Casual Suit',
     price: 3499.00,
     imageUrl:
         'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400',
@@ -27,7 +27,7 @@ final List<Product> mockProducts = [
     sizes: ['S', 'M', 'L'],
     colors: [Colors.pink, Colors.white, Colors.black],
     description:
-        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        'Elevate your professional and casual wardrobe with this elegantly tailored light blue suit. Made from lightweight, wrinkle-resistant fabric, it offers a comfortable fit with a modern, chic silhouette.',
   ),
   const Product(
     id: '3',
@@ -39,7 +39,7 @@ final List<Product> mockProducts = [
     sizes: ['M', 'L', 'XL'],
     colors: [Colors.grey, Colors.black, Colors.white],
     description:
-        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+        'Discover the ultimate blend of comfort and style with this urban streetwear ensemble. Featuring an oversized fit, bold graphic accents, and durable materials perfect for everyday city life.',
   ),
   const Product(
     id: '4',
@@ -52,7 +52,7 @@ final List<Product> mockProducts = [
     sizes: ['S', 'M'],
     colors: [Colors.brown, Colors.white],
     description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'Breeze through the warm seasons in this stunning summer dress. Designed with a flattering A-line cut, lightweight fabric, and delicate straps, it is your go-to choice for sunny days and beach outings.',
   ),
   const Product(
     id: '5',
@@ -65,7 +65,7 @@ final List<Product> mockProducts = [
     sizes: ['S', 'M', 'L', 'XL'],
     colors: [Colors.white, Colors.black, Colors.blue],
     description:
-        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        'An essential wardrobe staple, this classic white tee is made from ultra-soft, 100% organic cotton. Its relaxed fit and timeless crew neckline ensure maximum comfort and versatility for any casual occasion.',
   ),
   const Product(
     id: '6',
@@ -78,6 +78,6 @@ final List<Product> mockProducts = [
     sizes: ['S', 'M', 'L'],
     colors: [Colors.blue, Colors.black],
     description:
-        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        'A rugged yet stylish denim jacket that adds an edgy touch to any outfit. Crafted from premium vintage-washed denim, it features classic button details, chest pockets, and a comfortable regular fit.',
   ),
 ];
