@@ -37,67 +37,57 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Get luminance to determine if text should be white or black on hero bg
-    final bool isDarkTheme = widget.product.themeColor.computeLuminance() < 0.5;
-    final Color heroIconColor = isDarkTheme
-        ? Colors.white
-        : AppTheme.textPrimary;
-
     return Scaffold(
-      backgroundColor: widget.product.themeColor,
+      backgroundColor: AppTheme.white,
       body: Stack(
         children: [
-          // Top Area (Hero Background + Image)
+          // Large Product Image Area (Full Background)
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             height: MediaQuery.of(context).size.height * 0.65,
+            child: Hero(
+              tag: 'product_image_${widget.product.id}',
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return CachedNetworkImage(
+                    imageUrl: widget.product.imageUrl,
+                    fit: BoxFit.cover,
+                  );
+                },
+              ),
+            ),
+          ),
+          
+          // App Bar over hero
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
             child: SafeArea(
-              child: Column(
-                children: [
-                  // App Bar over hero
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.arrow_back, color: heroIconColor),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        Row(
-                          children: [
-                            _buildCartIcon(heroIconColor),
-                            IconButton(
-                              icon: Icon(Icons.menu, color: heroIconColor),
-                              onPressed: () {},
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Large Product Image Area
-                  Expanded(
-                    child: Hero(
-                      tag: 'product_image_${widget.product.id}',
-                      child: PageView.builder(
-                        controller: _pageController,
-                        itemCount: 3, // Assuming 3 images for the carousel
-                        itemBuilder: (context, index) {
-                          return CachedNetworkImage(
-                            imageUrl: widget.product.imageUrl,
-                            fit: BoxFit.contain,
-                          );
-                        },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppTheme.white.withOpacity(0.7),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+                        onPressed: () => Navigator.pop(context),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
