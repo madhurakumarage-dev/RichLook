@@ -4,7 +4,7 @@ import '../providers/cart_provider.dart';
 import '../theme/app_theme.dart';
 
 class CheckoutScreen extends StatelessWidget {
-  const CheckoutScreen({Key? key}) : super(key: key);
+  const CheckoutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,36 +36,29 @@ class CheckoutScreen extends StatelessWidget {
                 builder: (context, cart, child) {
                   return Column(
                     children: [
-                      ...cart.items
-                          .map(
-                            (item) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      '${item.quantity}x ${item.product.name} (${item.selectedSize})',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyMedium,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Rs. ${(item.product.price * item.quantity).toStringAsFixed(2)}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(fontWeight: FontWeight.w600),
-                                  ),
-                                ],
+                      ...cart.items.map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${item.quantity}x ${item.product.name} (${item.selectedSize})',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                            ),
-                          )
-                          .toList(),
+                              Text(
+                                'Rs. ${(item.product.price * item.quantity).toStringAsFixed(2)}',
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       const Divider(height: 24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

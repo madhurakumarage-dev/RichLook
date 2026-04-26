@@ -18,8 +18,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _passwordController = TextEditingController(
     text: '*************',
   );
+  final TextEditingController _dateOfBirthController = TextEditingController(
+    text: '23/05/2003',
+  );
 
-  String _selectedDate = '23/05/2003';
   String _selectedCountry = 'Sri Lanka';
 
   @override
@@ -35,17 +37,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: AppTheme.primaryBackground,
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: AppTheme.textPrimary,
-          ),
-          onPressed: () {
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            }
-          },
-        ),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios_new,
+                  color: AppTheme.textPrimary,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            : null,
         title: Text(
           'Edit Profile',
           style: Theme.of(
@@ -117,21 +119,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _buildLabel('Password'),
             _buildTextField(_passwordController, obscureText: true),
             const SizedBox(height: 20),
-
-            _buildLabel('Date of Birth'),
-            _buildDropdownField(
-              value: _selectedDate,
-              items: ['23/05/1995', '24/05/1995', '25/05/1995'],
-              onChanged: (val) {
-                if (val != null) setState(() => _selectedDate = val);
-              },
-            ),
+            _buildLabel('Date Of Birth'),
+            _buildTextField(_dateOfBirthController),
             const SizedBox(height: 20),
-
             _buildLabel('Country/Region'),
             _buildDropdownField(
               value: _selectedCountry,
-              items: ['Nigeria', 'United States', 'United Kingdom', 'Canada'],
+              items: ['Sri Lanka', 'United States', 'United Kingdom', 'Canada'],
               onChanged: (val) {
                 if (val != null) setState(() => _selectedCountry = val);
               },

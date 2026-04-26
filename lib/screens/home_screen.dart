@@ -9,6 +9,7 @@ import '../theme/app_theme.dart';
 import '../widgets/product_card.dart';
 import '../widgets/category_chip.dart';
 import '../widgets/bottom_nav_bar.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -36,6 +37,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _bottomNavIndex,
+        children: [
+          _buildHomeTab(),
+          const Scaffold(
+            body: Center(
+              child: Text('Categories'),
+            ),
+          ),
+          const ProfileScreen(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: _bottomNavIndex,
+        onTap: (index) {
+          setState(() {
+            _bottomNavIndex = index;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildHomeTab() {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rich Look'),
@@ -167,14 +193,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _bottomNavIndex,
-        onTap: (index) {
-          setState(() {
-            _bottomNavIndex = index;
-          });
-        },
       ),
     );
   }

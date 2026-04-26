@@ -9,7 +9,7 @@ void main() {
 }
 
 class FashionApp extends StatelessWidget {
-  const FashionApp({Key? key}) : super(key: key);
+  const FashionApp({super.key});
 
   @override
   Widget build(BuildContext context) {
