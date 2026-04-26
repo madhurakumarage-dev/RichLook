@@ -63,7 +63,6 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.accentOrange,
       body: Stack(
         children: [
           // Background/Hero Image
@@ -73,7 +72,6 @@ class _SplashScreenState extends State<SplashScreen>
             right: 0,
             height: MediaQuery.of(context).size.height * 0.65,
             child: Container(
-              margin: const EdgeInsets.only(top: 40, left: 24, right: 24),
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(40),

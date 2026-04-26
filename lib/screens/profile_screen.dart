@@ -71,13 +71,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 120,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppTheme.accentOrange.withOpacity(0.5),
-                        width: 2,
-                      ),
+
                       image: const DecorationImage(
                         image: NetworkImage(
-                          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                          'https://cdn-icons-png.flaticon.com/512/9203/9203764.png',
                         ),
                         fit: BoxFit.cover,
                       ),
