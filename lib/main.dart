@@ -16,7 +16,7 @@ class FashionApp extends StatelessWidget {
     return MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => CartProvider())],
       child: MaterialApp(
-        title: 'Fashion E-Commerce',
+        title: 'Rich Look',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         home: const SplashScreen(),

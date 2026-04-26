@@ -9,15 +9,18 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final TextEditingController _nameController =
-      TextEditingController(text: 'Melissa Peters');
-  final TextEditingController _emailController =
-      TextEditingController(text: 'melpeters@gmail.com');
-  final TextEditingController _passwordController =
-      TextEditingController(text: '*************');
+  final TextEditingController _nameController = TextEditingController(
+    text: 'Madhura Kumarage',
+  );
+  final TextEditingController _emailController = TextEditingController(
+    text: 'madhurakumarage@gmail.com',
+  );
+  final TextEditingController _passwordController = TextEditingController(
+    text: '*************',
+  );
 
-  String _selectedDate = '23/05/1995';
-  String _selectedCountry = 'Nigeria';
+  String _selectedDate = '23/05/2003';
+  String _selectedCountry = 'Sri Lanka';
 
   @override
   void dispose() {
@@ -33,7 +36,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: AppTheme.primaryBackground,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppTheme.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppTheme.textPrimary,
+          ),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
@@ -42,9 +48,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         title: Text(
           'Edit Profile',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -69,7 +75,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       image: const DecorationImage(
                         image: NetworkImage(
-                            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'), // Using an unsplash placeholder matching the vibe
+                          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -79,7 +86,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     decoration: BoxDecoration(
                       color: AppTheme.buttonDark,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppTheme.primaryBackground, width: 2),
+                      border: Border.all(
+                        color: AppTheme.primaryBackground,
+                        width: 2,
+                      ),
                     ),
                     child: const Icon(
                       Icons.camera_alt,
@@ -98,7 +108,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
 
             _buildLabel('Email'),
-            _buildTextField(_emailController, keyboardType: TextInputType.emailAddress),
+            _buildTextField(
+              _emailController,
+              keyboardType: TextInputType.emailAddress,
+            ),
             const SizedBox(height: 20),
 
             _buildLabel('Password'),
@@ -131,7 +144,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Profile updated successfully!')),
+                    const SnackBar(
+                      content: Text('Profile updated successfully!'),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -164,10 +179,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Text(
         text,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
-            ),
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: AppTheme.textPrimary,
+        ),
       ),
     );
   }
@@ -187,11 +202,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         controller: controller,
         obscureText: obscureText,
         keyboardType: keyboardType,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: 16,
-            ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
           border: InputBorder.none,
           hintStyle: TextStyle(color: AppTheme.textSecondary.withOpacity(0.5)),
         ),
@@ -215,16 +231,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          icon: const Icon(Icons.keyboard_arrow_down, color: AppTheme.textPrimary),
+          icon: const Icon(
+            Icons.keyboard_arrow_down,
+            color: AppTheme.textPrimary,
+          ),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontSize: 16,
-                color: AppTheme.textPrimary,
-              ),
+            fontSize: 16,
+            color: AppTheme.textPrimary,
+          ),
           items: items.map((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item),
-            );
+            return DropdownMenuItem<String>(value: item, child: Text(item));
           }).toList(),
           onChanged: onChanged,
         ),
