@@ -196,66 +196,135 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Browse by category',
+                    productProvider.selectedCategory == 'All'
+                        ? 'Browse by category'
+                        : productProvider.selectedCategory,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   const SizedBox(height: 16),
-                  Expanded(
-                    child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: 2.8,
+                  // Show back button if not on 'All'
+                  if (productProvider.selectedCategory != 'All')
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: ElevatedButton.icon(
+                        onPressed: () => productProvider.setCategory('All'),
+                        icon: const Icon(Icons.arrow_back),
+                        label: const Text('Back to categories'),
                       ),
-                      itemCount: productProvider.categories.length,
-                      itemBuilder: (context, index) {
-                        final category = productProvider.categories[index];
-                        final count = category == 'All'
-                            ? productProvider.products.length
-                            : productProvider.products
-                                .where((product) => product.category == category)
-                                .length;
-                        return GestureDetector(
-                          onTap: () => productProvider.setCategory(category),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: AppTheme.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: productProvider.selectedCategory == category
-                                    ? AppTheme.accentOrange
-                                    : AppTheme.textSecondary.withOpacity(0.2),
-                              ),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  category,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
-                                Text(
-                                  '$count',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: AppTheme.textSecondary,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
                     ),
+                  // Show categories or products based on selection
+                  Expanded(
+                    child: productProvider.selectedCategory == 'All'
+                        ? _buildCategoryGrid(context, productProvider)
+                        : _buildProductsGrid(context, productProvider),
                   ),
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildCategoryGrid(BuildContext context, ProductProvider productProvider) {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 2.8,
+      ),
+      itemCount: productProvider.categories.length,
+      itemBuilder: (context, index) {
+        final category = productProvider.categories[index];
+        final count = category == 'All'
+            ? productProvider.products.length
+            : productProvider.products
+                .where((product) => product.category == category)
+                .length;
+        return GestureDetector(
+          onTap: () => productProvider.setCategory(category),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppTheme.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: productProvider.selectedCategory == category
+                    ? AppTheme.accentOrange
+                    : AppTheme.textSecondary.withOpacity(0.2),
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  category,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                Text(
+                  '$count',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppTheme.textSecondary,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProductsGrid(BuildContext context, ProductProvider productProvider) {
+    final filteredProducts = productProvider.filteredProducts;
+    
+    if (filteredProducts.isEmpty) {
+      return Center(
+        child: Text(
+          'No products in this category',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      );
+    }
+
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.65,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: filteredProducts.length,
+      itemBuilder: (context, index) {
+        final product = filteredProducts[index];
+        return ProductCard(
+          product: product,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductDetailScreen(product: product),
+              ),
+            );
+          },
+          onAddToCart: () {
+            context.read<CartProvider>().addItem(
+                  product,
+                  product.sizes.first,
+                  product.colors.first,
+                );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${product.name} added to cart'),
+                duration: const Duration(seconds: 1),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

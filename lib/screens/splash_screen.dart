@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'home_screen.dart';
 import 'login_screen.dart';
-import '../services/firebase_service.dart';
+import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -43,11 +44,11 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _navigateToNext() {
-    final user = FirebaseService.auth.currentUser;
+    final auth = context.read<AuthProvider>();
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            user != null ? const HomeScreen() : const LoginScreen(),
+            auth.isAuthenticated ? const HomeScreen() : const LoginScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return SlideTransition(
             position: Tween<Offset>(

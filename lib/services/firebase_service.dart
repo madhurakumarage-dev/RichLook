@@ -46,10 +46,14 @@ class FirebaseService {
     return firestore
         .collection('orders')
         .where('userId', isEqualTo: userId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => app_models.Order.fromMap(doc.id, doc.data()))
-            .toList());
+        .map((snapshot) {
+          final orders = snapshot.docs
+              .map((doc) => app_models.Order.fromMap(doc.id, doc.data()))
+              .toList();
+          // Sort by createdAt on client side
+          orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return orders;
+        });
   }
 }

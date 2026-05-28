@@ -11,8 +11,7 @@ class OrderHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
-    final user = auth.user;
+    final user = context.read<AuthProvider>().user;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Order History')),
@@ -24,17 +23,19 @@ class OrderHistoryScreen extends StatelessWidget {
               ),
             )
           : StreamBuilder<List<Order>>(
-              stream: FirebaseService.firestore
-                  .collection('orders')
-                  .where('userId', isEqualTo: user.uid)
-                  .orderBy('createdAt', descending: true)
-                  .snapshots()
-                  .map((snapshot) => snapshot.docs
-                      .map((doc) => Order.fromMap(doc.id, doc.data()))
-                      .toList()),
+              stream: FirebaseService.orderStream(user.uid),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Error loading orders: ${snapshot.error}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                  );
                 }
                 final orders = snapshot.data ?? [];
                 if (orders.isEmpty) {
