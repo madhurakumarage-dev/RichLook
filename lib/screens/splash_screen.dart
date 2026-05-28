@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'home_screen.dart';
+import 'login_screen.dart';
+import '../services/firebase_service.dart';
 import '../theme/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -23,13 +26,13 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 1.0), // Start from below screen
+      begin: const Offset(0, 1.0),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutQuart));
 
-    // Start animation after a tiny delay
     Future.delayed(const Duration(milliseconds: 300), () {
       _controller.forward();
+      Future.delayed(const Duration(milliseconds: 1200), _navigateToNext);
     });
   }
 
@@ -39,20 +42,18 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
-  void _navigateToHome() {
+  void _navigateToNext() {
+    final user = FirebaseService.auth.currentUser;
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            const HomeScreen(),
+            user != null ? const HomeScreen() : const LoginScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return SlideTransition(
-            position:
-                Tween<Offset>(
-                  begin: const Offset(1.0, 0.0),
-                  end: Offset.zero,
-                ).animate(
-                  CurvedAnimation(parent: animation, curve: Curves.easeOut),
-                ),
+            position: Tween<Offset>(
+              begin: const Offset(1.0, 0.0),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
             child: child,
           );
         },
@@ -65,7 +66,6 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Stack(
         children: [
-          // Background/Hero Image
           Positioned(
             top: 0,
             left: 0,
@@ -86,8 +86,6 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
           ),
-
-          // Bottom Card
           Positioned(
             bottom: 0,
             left: 0,
@@ -112,22 +110,22 @@ class _SplashScreenState extends State<SplashScreen>
                     Text(
                       'Rich Look',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Discover your style',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.textSecondary,
-                      ),
+                            color: AppTheme.textSecondary,
+                          ),
                     ),
                     const SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _navigateToHome,
+                        onPressed: _navigateToNext,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
@@ -149,11 +147,10 @@ class _SplashScreenState extends State<SplashScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: _navigateToHome,
+                          onTap: _navigateToNext,
                           child: Text(
                             'Sign up',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   decoration: TextDecoration.underline,
                                 ),
@@ -163,16 +160,16 @@ class _SplashScreenState extends State<SplashScreen>
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
                             'Or',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: AppTheme.textSecondary),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: AppTheme.textSecondary,
+                                ),
                           ),
                         ),
                         GestureDetector(
-                          onTap: _navigateToHome,
+                          onTap: _navigateToNext,
                           child: Text(
                             'Login',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   decoration: TextDecoration.underline,
                                 ),
@@ -184,11 +181,11 @@ class _SplashScreenState extends State<SplashScreen>
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: _navigateToHome,
+                        onPressed: _navigateToNext,
                         icon: const Icon(
                           Icons.g_mobiledata,
                           size: 28,
-                        ), // Placeholder for Google icon
+                        ),
                         label: const Text(
                           'Continue with Google',
                           style: TextStyle(

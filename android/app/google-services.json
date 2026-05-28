@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1046761571972",
+    "project_id": "rich-look-c12df",
+    "storage_bucket": "rich-look-c12df.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046761571972:android:3446d8876dd4940fd224d1",
+        "android_client_info": {
+          "package_name": "com.example.fashion_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBZwLUxvMksbSH_2qHVsQR7AAhgGyQ1sY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

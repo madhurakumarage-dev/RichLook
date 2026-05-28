@@ -1,11 +1,10 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../models/product.dart';
 import '../providers/cart_provider.dart';
 import '../theme/app_theme.dart';
-import 'cart_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -35,6 +34,37 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     super.dispose();
   }
 
+  Widget _buildProductImage() {
+    if (widget.product.imageUrl.isNotEmpty) {
+      return CachedNetworkImage(
+        imageUrl: widget.product.imageUrl,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
+      );
+    }
+
+    if (widget.product.imagePath != null && widget.product.imagePath!.isNotEmpty) {
+      return FutureBuilder<String>(
+        future: FirebaseStorage.instance.ref(widget.product.imagePath!).getDownloadURL(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasData) {
+            return CachedNetworkImage(
+              imageUrl: snapshot.data!,
+              fit: BoxFit.cover,
+            );
+          }
+          return const Icon(Icons.image_not_supported);
+        },
+      );
+    }
+
+    return const Icon(Icons.image_not_supported);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,10 +83,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 controller: _pageController,
                 itemCount: 3,
                 itemBuilder: (context, index) {
-                  return CachedNetworkImage(
-                    imageUrl: widget.product.imageUrl,
-                    fit: BoxFit.cover,
-                  );
+                  return _buildProductImage();
                 },
               ),
             ),
@@ -332,45 +359,4 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildCartIcon(Color iconColor) {
-    return Consumer<CartProvider>(
-      builder: (context, cart, child) {
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.shopping_cart_outlined, color: iconColor),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const CartScreen()),
-                );
-              },
-            ),
-            if (cart.itemCount > 0)
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: AppTheme.textPrimary, // contrasting badge
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 1),
-                  ),
-                  child: Text(
-                    '${cart.itemCount}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        );
-      },
-    );
-  }
 }

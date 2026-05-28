@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/product.dart';
@@ -14,6 +15,35 @@ class ProductCard extends StatelessWidget {
     required this.onTap,
     required this.onAddToCart,
   });
+
+  Widget _buildProductImage() {
+    if (product.imageUrl.isNotEmpty) {
+      return CachedNetworkImage(
+        imageUrl: product.imageUrl,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
+      );
+    }
+    if (product.imagePath != null && product.imagePath!.isNotEmpty) {
+      return FutureBuilder<String>(
+        future: FirebaseStorage.instance.ref(product.imagePath!).getDownloadURL(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasData) {
+            return CachedNetworkImage(
+              imageUrl: snapshot.data!,
+              fit: BoxFit.cover,
+            );
+          }
+          return const Icon(Icons.image_not_supported);
+        },
+      );
+    }
+    return const Icon(Icons.image_not_supported);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +74,7 @@ class ProductCard extends StatelessWidget {
                       topLeft: Radius.circular(12),
                       topRight: Radius.circular(12),
                     ),
-                    child: CachedNetworkImage(
-                      imageUrl: product.imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          const Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                    ),
+                    child: _buildProductImage(),
                   ),
                 ),
               ),

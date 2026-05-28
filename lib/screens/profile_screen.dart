@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/auth_provider.dart';
+import '../screens/order_history_screen.dart';
 import '../theme/app_theme.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -9,27 +13,53 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final TextEditingController _nameController = TextEditingController(
-    text: 'Madhura Kumarage',
-  );
-  final TextEditingController _emailController = TextEditingController(
-    text: 'madhurakumarage@gmail.com',
-  );
-  final TextEditingController _passwordController = TextEditingController(
-    text: '*************',
-  );
-  final TextEditingController _dateOfBirthController = TextEditingController(
-    text: '23/05/2003',
-  );
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
-  String _selectedCountry = 'Sri Lanka';
+  bool _initialized = false;
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _passwordController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      final auth = context.read<AuthProvider>();
+      final profile = auth.profile;
+      if (profile != null) {
+        _nameController.text = profile.name;
+        _emailController.text = profile.email;
+        _phoneController.text = profile.phone;
+        _addressController.text = profile.address;
+      }
+      _initialized = true;
+    }
+  }
+
+  Future<void> _saveProfile() async {
+    final auth = context.read<AuthProvider>();
+    final success = await auth.updateProfile(
+      name: _nameController.text.trim(),
+      address: _addressController.text.trim(),
+      phone: _phoneController.text.trim(),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(success
+            ? 'Profile updated successfully!'
+            : auth.errorMessage ?? 'Unable to save profile'),
+      ),
+    );
   }
 
   @override
@@ -37,129 +67,139 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: AppTheme.primaryBackground,
       appBar: AppBar(
-        leading: Navigator.canPop(context)
-            ? IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: AppTheme.textPrimary,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              )
-            : null,
         title: Text(
-          'Edit Profile',
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          'Profile',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Profile Image
-            Center(
-              child: Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+      body: Consumer<AuthProvider>(
+        builder: (context, auth, child) {
+          if (auth.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!auth.isAuthenticated || auth.profile == null) {
+            return Center(
+              child: Text(
+                'Please login to manage your profile.',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
 
-                      image: const DecorationImage(
-                        image: NetworkImage(
-                          'https://cdn-icons-png.flaticon.com/512/9203/9203764.png',
+          final profile = auth.profile!;
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundColor: AppTheme.primaryBackground,
+                        backgroundImage: profile.photoUrl.isNotEmpty
+                            ? NetworkImage(profile.photoUrl)
+                            : null,
+                        child: profile.photoUrl.isEmpty
+                            ? const Icon(
+                                Icons.person,
+                                size: 56,
+                                color: AppTheme.textSecondary,
+                              )
+                            : null,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.buttonDark,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppTheme.primaryBackground,
+                            width: 2,
+                          ),
                         ),
-                        fit: BoxFit.cover,
+                        child: const Icon(
+                          Icons.camera_alt,
+                          color: AppTheme.white,
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+                _buildLabel('Name'),
+                _buildTextField(_nameController),
+                const SizedBox(height: 20),
+                _buildLabel('Email'),
+                _buildTextField(
+                  _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  enabled: false,
+                ),
+                const SizedBox(height: 20),
+                _buildLabel('Phone'),
+                _buildTextField(_phoneController, keyboardType: TextInputType.phone),
+                const SizedBox(height: 20),
+                _buildLabel('Delivery address'),
+                _buildTextField(_addressController),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _saveProfile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.buttonDark,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Save changes',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.white,
                       ),
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.buttonDark,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppTheme.primaryBackground,
-                        width: 2,
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt,
-                      color: AppTheme.white,
-                      size: 20,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 40),
-
-            // Form Fields
-            _buildLabel('Name'),
-            _buildTextField(_nameController),
-            const SizedBox(height: 20),
-
-            _buildLabel('Email'),
-            _buildTextField(
-              _emailController,
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 20),
-
-            _buildLabel('Password'),
-            _buildTextField(_passwordController, obscureText: true),
-            const SizedBox(height: 20),
-            _buildLabel('Date Of Birth'),
-            _buildTextField(_dateOfBirthController),
-            const SizedBox(height: 20),
-            _buildLabel('Country/Region'),
-            _buildDropdownField(
-              value: _selectedCountry,
-              items: ['Sri Lanka', 'United States', 'United Kingdom', 'Canada'],
-              onChanged: (val) {
-                if (val != null) setState(() => _selectedCountry = val);
-              },
-            ),
-            const SizedBox(height: 40),
-
-            // Save Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Profile updated successfully!'),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.buttonDark,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const OrderHistoryScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text('View order history'),
                   ),
                 ),
-                child: const Text(
-                  'Save changes',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.white,
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      await auth.signOut();
+                    },
+                    child: const Text('Logout'),
                   ),
                 ),
-              ),
+              ],
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -170,10 +210,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Text(
         text,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: AppTheme.textPrimary,
-        ),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textPrimary,
+            ),
       ),
     );
   }
@@ -181,6 +221,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildTextField(
     TextEditingController controller, {
     bool obscureText = false,
+    bool enabled = true,
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
@@ -191,6 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: TextField(
         controller: controller,
+        enabled: enabled,
         obscureText: obscureText,
         keyboardType: keyboardType,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
@@ -201,39 +243,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           border: InputBorder.none,
           hintStyle: TextStyle(color: AppTheme.textSecondary.withOpacity(0.5)),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDropdownField({
-    required String value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppTheme.textSecondary.withOpacity(0.2)),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          isExpanded: true,
-          icon: const Icon(
-            Icons.keyboard_arrow_down,
-            color: AppTheme.textPrimary,
-          ),
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontSize: 16,
-            color: AppTheme.textPrimary,
-          ),
-          items: items.map((String item) {
-            return DropdownMenuItem<String>(value: item, child: Text(item));
-          }).toList(),
-          onChanged: onChanged,
         ),
       ),
     );
